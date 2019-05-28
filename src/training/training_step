@@ -1,0 +1,4 @@
+python train.py --data /root/catkin_ws/src/dope/dataset/data_v2 --object 1 --outf 1 --batchsize 8 --workers 0 --net /root/catkin_ws/src/dope/weights/soup_60.pth
+
+python train_modify.py --data /root/catkin_ws/src/dope/dataset/data_v2 --datatest /root/catkin_ws/src/dope/dataset/Table_white_room/ --object 1 --outf 1_v2_2_stage3 --batchsize 8 --workers 0 
+

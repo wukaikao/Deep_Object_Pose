@@ -1,0 +1,1 @@
+python train.py --data /root/catkin_ws/src/dope/dataset/data_v2/ --net /root/catkin_ws/src/dope/weights/1_net_epoch_56.pth --batchsize 8 --object 1 --outf 1 --workers 0 

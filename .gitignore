@@ -1,5 +1,7 @@
 /weights
+/dataset
 *.pyc
 *._
 *.png
+*pth
 __pycache__
