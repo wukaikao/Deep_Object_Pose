@@ -1,12 +1,16 @@
 import pandas as pd 
 import os
-	
-now_work_path = os.getcwd()
-print(now_work_path)
-df = pd.read_csv(str(now_work_path)+'/train_1_v2_2_stage3_/loss_train.csv') 
-df2 = pd.read_csv(str(now_work_path)+'/train_1_v2_2_stage3_/loss_test.csv') 
+import sys
 
-epoch = 7
+
+__, train_folder,epoch = sys.argv
+print(train_folder,epoch)
+now_work_path = os.getcwd()
+df = pd.read_csv(str(now_work_path)+"/"+str(train_folder)+'loss_train.csv') 
+df2 = pd.read_csv(str(now_work_path)+"/"+str(train_folder)+'loss_test.csv') 
+
+# epoch = 7
+epoch = int(epoch)
 count  =[]
 average=[]
 average2=[]
@@ -15,17 +19,19 @@ for i in range(epoch):
     average.append(0)
     average2.append(0)
 
+print("loss_train compressing......")
 for i in range(len(df['epoch'])) :
     for epoch_num in range(epoch):
         if df['epoch'][i]==epoch_num+1:
-            print("epoch : "+str(epoch_num))
+            # print("epoch : "+str(epoch_num))
 	    count[epoch_num] = count[epoch_num]+1
             average[epoch_num]= df['loss'][i] + average[epoch_num]
 
+print("loss_test comressing......")
 for i in range(len(df2['epoch'])) :
     for epoch_num in range(epoch):
         if df2['epoch'][i]==epoch_num+1:
-            print("epoch : "+str(epoch_num))
+            # print("epoch : "+str(epoch_num))
 	    count[epoch_num] = count[epoch_num]+1
             average2[epoch_num]= df2['loss'][i] + average2[epoch_num]
 
@@ -40,4 +46,5 @@ for i in range(epoch):
 
 
 data_df = pd.DataFrame(data_dict)
-data_df.to_csv('train_1_v2_2_stage3_.csv')
+data_df.to_csv(str(now_work_path)+"/"+str(train_folder)+'light_loss.ods')
+print("FINISH!\n[light_loss.csv] is saving in "+str(now_work_path)+"/"+str(train_folder))
