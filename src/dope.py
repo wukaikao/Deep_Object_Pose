@@ -18,7 +18,7 @@ import cv2
 
 import rospy
 import rospkg
-from std_msgs.msg import String, Empty
+from std_msgs.msg import String, Empty, Float32MultiArray
 from cv_bridge import CvBridge, CvBridgeError
 from sensor_msgs.msg import Image as ImageSensor_msg
 from geometry_msgs.msg import PoseStamped
@@ -116,6 +116,7 @@ def run_dope_node(params, freq=5):
     pnp_solvers = {}
     pub_dimension = {}
     draw_colors = {}
+    pub_all_peaks = {}
 
     # Initialize parameters
     matrix_camera = np.zeros((3,3))
@@ -169,6 +170,12 @@ def run_dope_node(params, freq=5):
                 String, 
                 queue_size=10
             )
+        pub_all_peaks[model] = \
+            rospy.Publisher(
+                '{}/all_peaks_{}'.format(params['topic_publishing'], model),
+                Float32MultiArray, 
+                queue_size=1
+            )
 
     # Start ROS publisher
     pub_rgb_dope_points = \
@@ -193,6 +200,7 @@ def run_dope_node(params, freq=5):
     print ("Ctrl-C to stop")
 
     while not rospy.is_shutdown():
+        print(g_img)
         if g_img is not None:
             # Copy and draw image
             img_copy = g_img.copy()
@@ -201,13 +209,21 @@ def run_dope_node(params, freq=5):
 
             for m in models:
                 # Detect object
-                results = ObjectDetector.detect_object_in_image(
+                results,all_peaks = ObjectDetector.detect_object_in_image(
                             models[m].net, 
                             pnp_solvers[m],
                             g_img,
                             config_detect
                             )
-                
+                msg_all_peaks = Float32MultiArray()
+                for i in range(len(all_peaks)):
+                    if(all_peaks[i]==[]):
+                        msg_all_peaks.data.append(0.0)
+                    else:
+                        msg_all_peaks.data.append(1.0)
+                print("publish peaks")
+                pub_all_peaks[m].publish(msg_all_peaks)
+                g_img = None
                 # Publish pose and overlay cube on image
                 for i_r, result in enumerate(results):
                     if result["location"] is None:

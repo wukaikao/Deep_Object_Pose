@@ -493,7 +493,7 @@ class ObjectDetector(object):
         image_torch = Variable(image_tensor).cuda().unsqueeze(0)
         out, seg = net_model(image_torch)
 
-        print(type(in_img),type(image_tensor),type(image_torch))
+        
         # img = ObjectDetector.draw_feature(1,1,feature_maps[0].detach().numpy())
         # img  = image_torch.cpu.detach().numpy()
         # plt.imshow(img)
@@ -522,9 +522,9 @@ class ObjectDetector(object):
         aff = seg[-1][0]
 
         # Find objects from network output
-        detected_objects = ObjectDetector.find_object_poses(vertex2, aff, pnp_solver, config)
+        detected_objects,all_peaks = ObjectDetector.find_object_poses(vertex2, aff, pnp_solver, config)
 
-        return detected_objects
+        return detected_objects,all_peaks
     
     @staticmethod
     def tensor_to_PIL(tensor):
@@ -559,7 +559,7 @@ class ObjectDetector(object):
                 'projected_points': projected_points,
             })
 
-        return detected_objects
+        return detected_objects,all_peaks
 
     @staticmethod
     def find_objects(vertex2, aff, config, numvertex=8):
