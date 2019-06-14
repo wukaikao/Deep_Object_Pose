@@ -1,0 +1,1 @@
+Namespace(batchsize=8, data='/root/catkin_ws/src/dope/dataset/data_v2/', datasize=None, datatest='', epochs=60, gpuids=[0], imagesize=400, loginterval=100, lr=0.0001, manualseed=6881, namefile='epoch', nbupdates=None, net='', noise=2.0, object='1', option='default', outf='train_1', pretrained=True, save=False, sigma='8', workers=0)seed: 6881

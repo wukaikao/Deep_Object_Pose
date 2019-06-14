@@ -10,7 +10,9 @@ weights: {
     # "mustard":"mustard_60.pth", 
     # "soup":"soup_60.pth", 
     # "sugar":"sugar_60.pth"
-    "cracker":"../src/training/train_1_v2_2/net_epoch_60.pth", 
+    # "cracker":"../src/training/VGG+/train_1_v2+v3_vgg+_stage3_initial/net_epoch_16.pth" , 
+    "cracker":"../src/training/VGG-/train_1_v3_vgg-_stage3/net_epoch_60.pth", 
+    # "cracker":"../src/training/backuppth/train_1_v2_2/net_epoch_60.pth", 
     # "gelatin":"../src/training/train_1_v2_2_stage3/net_epoch_20.pth", 
     # "meat":"../src/training/train_1_v2_2_stage3/net_epoch_30.pth", 
     #"gelatin":"../src/training/train_1_v2_2/net_epoch_30.pth",

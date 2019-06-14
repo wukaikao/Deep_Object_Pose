@@ -34,26 +34,40 @@ class image_converter:
     return self.all_peaks
  
 def main(args):
+  if(len(args)!=5):
+    print("-----------------------------------------------------------------------\n" +
+          "Wrong args input. The args must be 4 !\n" +  
+          "example:\n" +
+          "rosrun dope load_image_topic.py data_v2/sofa/ train_1_v3_vgg-_stage3_60 0 409\n" +
+          "arg[1] for #test_folder\n" +
+          "arg[2] for #output_file_name\n" +
+          "arg[3] for #start_filenum\n" +
+          "arg[4] for #end_filenum\n" + 
+          "------------------------------------------------------------------------")
+    exit(1)
+  __,test_folder,output_file_name,start_filenum,end_filenum = args
+
   ic = image_converter()
   rospy.init_node('image_converter', anonymous=True)
-  rate = rospy.Rate(4)
+  rate = rospy.Rate(8)
 
   now_work_path = os.getcwd()
   print(now_work_path)
   # filepath = now_work_path + "/src/dope/dope_objects"
-  filepath = now_work_path + "/src/dope/dataset/data_v2/sofa/"
-  filenum = 0
+  filepath = now_work_path + "/src/dope/dataset/" +str(test_folder)
+  filenum = int(start_filenum)
+  test_range = int(end_filenum)-int(start_filenum)
   filetype = ".png"
 
   accuracy ={"filename":[],"peak_0":[],"peak_1":[],"peak_2":[],"peak_3":[],"peak_4":[],"peak_5":[],"peak_6":[],"peak_7":[],"peak_8":[]} 
   
-  for i in range(410):
+  for i in range(test_range):
     filename = filepath + '{:06d}'.format(filenum+i) + filetype
     # print(filename)
-    # if raw_input("in " + '{:06d}'.format(filenum+i) + ".png Countinus... ")!= 'n':
     if rospy.is_shutdown():
       break
     else:
+    # if raw_input("in " + '{:06d}'.format(filenum+i) + ".png Countinus... ")!= 'n':
       ic.publish_image(filename)
       # ic.publish_image(filepath+filetype)
       rate.sleep()
@@ -61,6 +75,8 @@ def main(args):
       accuracy["filename"].append(filenum+i)
       for j in range(len(all_peaks)):
         accuracy["peak_" + str(j)].append(all_peaks[j])
+    # else:
+    #   break
     cv2.waitKey(0)
   print(len(accuracy["filename"]))
   for i in range(8):
@@ -70,8 +86,9 @@ def main(args):
   data_df.loc['avg'] = data_df.mean()
   print("accuracy is :",data_df.loc['avg'])
 
-  data_df.to_csv(str(now_work_path) + "/src/dope/src/accuracy.csv")
-  print("save file accuracy.csv in " + str(now_work_path) + "/src/dope/src/")
+  data_df.to_csv(str(now_work_path) + "/src/dope/accuracy/" + str(output_file_name) + ".csv")
+  print("FINISH!\n[" +
+        str(output_file_name) + "] saving in " + str(now_work_path) + "/src/dope/accuracy")
 
 if __name__ == '__main__':
     main(sys.argv)

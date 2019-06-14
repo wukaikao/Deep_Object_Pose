@@ -94,6 +94,7 @@ import warnings
 warnings.filterwarnings("ignore")
 os.environ["CUDA_VISIBLE_DEVICES"]="0,1,2,3,4,5,6,7"
 
+import matplotlib.pyplot as plt
 
 ##################################################
 # NEURAL NETWORK MODEL
@@ -110,13 +111,8 @@ class DopeNetwork(nn.Module):
         super(DopeNetwork, self).__init__()
 
         self.stop_at_stage = stop_at_stage
-        
-		if pretrained is False:
-			print("Training network without imagenet weights.")
-		else:
-			print("Training network pretrained on imagenet.")
-            
-        vgg_full = models.vgg19(pretrained=pretrained).features
+
+        vgg_full = models.vgg19(pretrained=False).features
         self.vgg = nn.Sequential()
         for i_layer in range(24):
             self.vgg.add_module(str(i_layer), vgg_full[i_layer])
@@ -356,10 +352,6 @@ def loadimages(root):
             if exists(imgpath) and exists(imgpath.replace('png',"json")):
                 imgs.append((imgpath,imgpath.replace(path,"").replace("/",""),
                     imgpath.replace('png',"json")))
-        for imgpath in glob.glob(path+"/*.jpg"):
-            if exists(imgpath) and exists(imgpath.replace('jpg',"json")):
-                imgs.append((imgpath,imgpath.replace(path,"").replace("/",""),
-                    imgpath.replace('jpg',"json")))
 
     def explore(path):
         if not os.path.isdir(path):
@@ -396,6 +388,7 @@ class MultipleVertexJson(data.Dataset):
             random_rotation = 15.0,
             ):
         ###################
+        self.save = save
         self.objectsofinterest = objectsofinterest
         self.img_size = img_size
         self.loader = loader
@@ -463,7 +456,7 @@ class MultipleVertexJson(data.Dataset):
                                 data['rotations'])).float() 
 
         if len(points_all) == 0:
-            points_all = torch.zeros(1, 10, 2).double()
+            points_all = torch.zeros(1)
         
         # self.save == true assumes there is only 
         # one object instance in the scene. 
@@ -683,6 +676,12 @@ class MultipleVertexJson(data.Dataset):
 
         affinities = affinities[:,h_crop:h_crop+int(img_size[1]/8),w_crop:w_crop+int(img_size[0]/8)]
         beliefs = beliefs[:,h_crop:h_crop+int(img_size[1]/8),w_crop:w_crop+int(img_size[0]/8)]
+
+        for j in range(len(affinities)):
+            # beliefs[j] = beliefsImg[j][0]
+            plt.subplot(4,4,j+1)
+            plt.imshow(affinities[j])
+        plt.show()
 
         if affinities.size()[1] == 49 and not self.test:
             affinities = torch.cat([affinities,torch.zeros(16,1,50)],dim=1)
@@ -969,7 +968,7 @@ def make_grid(tensor, nrow=8, padding=2,
     if tensor.dim() == 4 and tensor.size(1) == 1:  # single-channel images
         tensor = torch.cat((tensor, tensor, tensor), 1)
 
-    if normalize == True:
+    if normalize is True:
         tensor = tensor.clone()  # avoid modifying tensor in-place
         if range is not None:
             assert isinstance(range, tuple), \
@@ -985,7 +984,7 @@ def make_grid(tensor, nrow=8, padding=2,
             else:
                 norm_ip(t, float(t.min()), float(t.max()))
 
-        if scale_each == True:
+        if scale_each is True:
             for t in tensor:  # loop over mini-batch dimension
                 norm_range(t, range)
         else:
@@ -1198,9 +1197,6 @@ parser.set_defaults(**defaults)
 parser.add_argument("--option")
 opt = parser.parse_args(remaining_argv)
 
-if opt.pretrained in ['false', 'False']:
-	opt.pretrained = False
-
 if not "/" in opt.outf:
     opt.outf = "train_{}".format(opt.outf)
 
@@ -1250,7 +1246,7 @@ else:
 print ("load data")
 #load the dataset using the loader in utils_pose
 trainingdata = None
-if not opt.data == "":
+if not opt.data is "":
     train_dataset = MultipleVertexJson(
         root = opt.data,
         objectsofinterest=opt.object,

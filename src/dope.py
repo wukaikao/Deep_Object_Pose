@@ -31,7 +31,10 @@ rospack = rospkg.RosPack()
 g_path2package = rospack.get_path('dope')
 sys.path.append("{}/src/inference".format(g_path2package))
 from cuboid import *
-from detector import *
+# from detector import * 
+# from detector_modify import * 
+# from detector_vgg_plus import * 
+from detector_vgg_minuse import * 
 
 ### Global Variables
 g_bridge = CvBridge()
@@ -200,7 +203,6 @@ def run_dope_node(params, freq=5):
     print ("Ctrl-C to stop")
 
     while not rospy.is_shutdown():
-        print(g_img)
         if g_img is not None:
             # Copy and draw image
             img_copy = g_img.copy()

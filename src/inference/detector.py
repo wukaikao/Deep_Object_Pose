@@ -110,7 +110,7 @@ class DopeNetwork(nn.Module):
             self,
             numBeliefMap=9,
             numAffinity=16,
-            stop_at_stage=1  # number of stages to process (if less than total number of stages)
+            stop_at_stage=3  # number of stages to process (if less than total number of stages)
         ):
         super(DopeNetwork, self).__init__()
 
@@ -450,21 +450,24 @@ class ModelData(object):
         model_loading_start_time = time.time()
         print("Loading DOPE model '{}'...".format(path))
         net = DopeNetwork()
+        #origin
+        # net.load_state_dict(torch.load(path))
+        
+        #modify
         dict_new = net.state_dict().copy()
         dict_trained = torch.load(path)
  
         new_list = list(net.state_dict().keys())
         trained_list = list(dict_trained.keys())
 
+        for i in range(len(trained_list)):
+            print("trained_list",i,trained_list[i])
         dict_new.clear()        
         for i in range(len(new_list)):
-            # print("new_list",i,new_list[i])
+            print("new_list",i,new_list[i])
             dict_new[ "module."+str(new_list[i]) ] = dict_trained[ trained_list[i] ]
-        # for i in range(len(trained_list)):
-            # print("trained_list",i,trained_list[i])
 
         net = torch.nn.DataParallel(net, [0]).cuda()
-        # net.load_state_dict(torch.load(path))
         net.load_state_dict(dict_new)
 
         net.eval()
