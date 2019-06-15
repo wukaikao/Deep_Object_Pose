@@ -790,8 +790,8 @@ class MultipleVertexJson(data.Dataset):
             normalize = transforms.Compose([AddNoise(0.0001)])
         
         img = crop(img,h_crop,w_crop,img_size[1],img_size[0])
-        plt.subplot(4,5,19)
-        plt.imshow(img)
+        #plt.subplot(4,5,19)
+        #plt.imshow(img)
         img = totensor(img)
 
         img = normalize(img)
@@ -802,10 +802,10 @@ class MultipleVertexJson(data.Dataset):
         affinities = affinities[:,h_crop:h_crop+int(img_size[1]/4),w_crop:w_crop+int(img_size[0]/4)]
         beliefs = beliefs[:,h_crop:h_crop+int(img_size[1]/4),w_crop:w_crop+int(img_size[0]/4)]
 
-        for j in range(len(beliefs)):
-            plt.subplot(4,5,j+1)
-            plt.imshow(beliefs[j])
-        plt.show()
+        #for j in range(len(beliefs)):
+        #    plt.subplot(4,5,j+1)
+        #    plt.imshow(beliefs[j])
+        #plt.show()
 
         if affinities.size()[1] == 49 and not self.test:
             affinities = torch.cat([affinities,torch.zeros(16,1,50)],dim=1)
