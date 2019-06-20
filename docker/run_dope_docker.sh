@@ -14,21 +14,34 @@ fi
 HOST_DIR=$2
 if [[ -z "${HOST_DIR}" ]]; then
     HOST_DIR=`realpath ${PWD}/..`
+    HOST_AI_BOT_DIR=`realpath ${PWD}/../../AI_Bot`
 fi
 
 CONTAINER_DIR=$3
 if [[ -z "${CONTAINER_DIR}" ]]; then
     CONTAINER_DIR=/root/catkin_ws/src/dope
+    AI_BOT_CONTAINER_DIR=/root/catkin_ws/src/AI_Bot
 fi
 
 echo "Container name     : ${CONTAINER_NAME}"
 echo "Host directory     : ${HOST_DIR}"
+echo "Host AI_Bot directory: ${HOST_AI_BOT_DIR}"
 echo "Container directory: ${CONTAINER_DIR}"
+echo "AI_Bot Container directory: ${AI_BOT_CONTAINER_DIR}"
+
 DOPE_ID=`docker ps -aqf "name=^/${CONTAINER_NAME}$"`
 if [ -z "${DOPE_ID}" ]; then
     echo "Creating new DOPE docker container."
     xhost +
-    nvidia-docker run -it --privileged --network=host -v ${HOST_DIR}:${CONTAINER_DIR}:rw -v /tmp/.X11-unix:/tmp/.X11-unix -e DISPLAY=unix${DISPLAY} --name=${CONTAINER_NAME} nvidia-dope:kinetic-v1 bash
+    nvidia-docker run -it --privileged --network=host\
+                  -v ${HOST_DIR}:${CONTAINER_DIR}:rw\
+                  -v ${HOST_AI_BOT_DIR}:${AI_BOT_CONTAINER_DIR}:rw\
+                  -v /tmp/.X11-unix:/tmp/.X11-unix \
+                  -v /dev/ttyUSB0:/dev/single/arm_left \
+                  -v /dev/ttyUSB1:/dev/single/slide_left \
+                  -e DISPLAY=unix${DISPLAY}\
+                  --name=${CONTAINER_NAME}\
+                  nvidia-dope:kinetic-v1 bash
 else
     echo "Found DOPE docker container: ${DOPE_ID}."
     # Check if the container is already running and start if necessary.

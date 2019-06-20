@@ -5,3 +5,5 @@
 *.png
 *pth
 __pycache__
+
+*.csv
