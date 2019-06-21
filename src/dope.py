@@ -215,23 +215,22 @@ def run_dope_node(params, freq=5):
                             models[m].net, 
                             pnp_solvers[m],
                             g_img,
-                            config_detect
-                            )
-                msg_all_peaks = Float32MultiArray()
-                for i in range(len(all_peaks)):
-                    if(all_peaks[i]==[]):
-                        msg_all_peaks.data.append(0.0)
-                    else:
-                        msg_all_peaks.data.append(1.0)
-                print("publish peaks")
-                pub_all_peaks[m].publish(msg_all_peaks)
-                g_img = None
+                            config_detect)
+                # msg_all_peaks = Float32MultiArray()
+                # for i in range(len(all_peaks)):
+                #     if(all_peaks[i]==[]):
+                #         msg_all_peaks.data.append(0.0)
+                #     else:
+                #         msg_all_peaks.data.append(1.0)
+                # print("publish peaks")
+                # pub_all_peaks[m].publish(msg_all_peaks)
+                # g_img = None
                 # Publish pose and overlay cube on image
                 for i_r, result in enumerate(results):
                     if result["location"] is None:
                         continue
-                    loc = result["location"]
-                    ori = result["quaternion"]                    
+                    loc = np.multiply(result["location"],100.0)
+                    ori = np.multiply(result["quaternion"],100.0)                  
                     msg = PoseStamped()
                     msg.header.frame_id = params["frame_id"]
                     msg.header.stamp = rospy.Time.now()
