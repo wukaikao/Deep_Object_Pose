@@ -16,8 +16,8 @@ weights: {
     # "gelatin":"../src/training/train_1_v2_2_stage3/net_epoch_20.pth", 
     # "meat":"../src/training/train_1_v2_2_stage3/net_epoch_30.pth", 
     #"gelatin":"../src/training/train_1_v2_2/net_epoch_30.pth",
-    "gelatin":"net_epoch_5.pth",
     "cracker":"1_HUGE_30.pth",
+    "gelatin":"net_epoch_5.pth",
 }
 
 # Cuboid dimension in cm x,y,z
