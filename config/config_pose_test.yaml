@@ -16,14 +16,20 @@ weights: {
     # "gelatin":"../src/training/train_1_v2_2_stage3/net_epoch_20.pth", 
     # "meat":"../src/training/train_1_v2_2_stage3/net_epoch_30.pth", 
     #"gelatin":"../src/training/train_1_v2_2/net_epoch_30.pth",
-    "cracker":"1_HUGE_30.pth",
-    "gelatin":"net_epoch_5.pth",
+    # "cracker":"1_HUGE_30.pth",
+    # "gelatin":"net_epoch_5.pth",
+    "cracker":"train_2_HUGE_vgg-_stage_2+/net_epoch_31.pth",   
+    "gelatin":"train_2_HUGE_vgg-_stage_2+/net_epoch_5.pth"
 }
 
 # Cuboid dimension in cm x,y,z
 dimensions: {
-    "cracker": [4.4,4.3,4.2], #1
-    "gelatin": [4.4,4.3,4.2], #2
+    # "cracker": [4.4,4.3,4.2], #1
+    # "gelatin": [4.4,4.3,4.2], #1
+    "cracker": [3.9,4.6,5.68], #2
+    "gelatin": [3.9,4.6,5.68], #2
+    # "cracker": [6.2,7,4.59], #3
+    # "gelatin": [6.2,7,4.59], #3
     #"cracker": [16.403600692749023,21.343700408935547,7.179999828338623],
     #"gelatin": [8.918299674987793, 7.311500072479248, 2.9983000755310059],
     #"meat": [10.164673805236816,8.3542995452880859,5.7600898742675781],
