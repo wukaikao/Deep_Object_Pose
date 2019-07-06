@@ -42,6 +42,7 @@ target_object = {}
 class node_publisher:
     def __init__(self):
         self.image_pub = rospy.Publisher("/dope/webcam_rgb_raw",Image,queue_size=10)
+       
 
         self.bridge = CvBridge()
   
@@ -57,6 +58,7 @@ class Multi_subscriber:
         self.model = _model
         self.feedback = _type()
         self.flag = False
+        self.result_pose_pub = rospy.Publisher("/answer/"+str(self.model),PoseStamped,queue_size=10)
 
     def sub_cp(self,data):
         self.feedback = data
@@ -75,16 +77,23 @@ class Multi_subscriber:
         self.flag = False
 
 class result_manager:
-    def __init__(self,_params=None,_test_floder=None,_object_number = None,_output_file_name =None):
+    def __init__(self,_params=None,_test_floder=None,_object_number = None, _output_file_name = None):
         self.target={}
         self.sub_cb={}
         self.sub={}
         self.params = _params
         self.test_floder = _test_floder
         self.object_number = str(_object_number)
-        self.output_file_name = str(_output_file_name)
-        json_list = [filename for filename in os.listdir(_test_floder) if filename.endswith('.json')]
-        self.filename_list = sorted([os.path.splitext(filename)[0] for filename in json_list])
+        
+        self.output_file_name = _output_file_name
+
+        self.view_folder = []
+        model_path = str()
+        model_folder = []
+        self.testing_path = str()
+        self.filename_list = []
+        self.save_path =str()
+
         self.model_list = self.params['weights']
         self.image_pub = node_publisher()
 
@@ -93,9 +102,10 @@ class result_manager:
         self.state = st_init
         self.tStart = 0
         self.tEnd = 0
-        self.image_index= 0 #1450
+        self.image_index= 0
         self.loca_error = 0
-        
+        self.view_num = 0
+        self.total_average = pd.DataFrame()
 
 
         
@@ -121,41 +131,70 @@ class result_manager:
 
     def process(self):
         if self.state == st_init:
+            self.view_folder = sorted(os.listdir(self.test_floder))
+            model_path = self.test_floder + '/' + self.view_folder[self.view_num]
+            model_folder = sorted(os.listdir(model_path))
+            self.testing_path = model_path + '/' +model_folder[int(self.object_number)-1]
+            print(self.testing_path)
+            json_list = [filename for filename in os.listdir(self.testing_path) if filename.endswith('.json')]
+            self.filename_list = sorted([os.path.splitext(filename)[0] for filename in json_list])
+
+            self.save_path = str(g_path2package) + "/accuracy/" + str(self.output_file_name) + str(self.view_folder[self.view_num])
+            if not os.path.exists(self.save_path):
+                os.makedirs(self.save_path)
             self.state=st_1
         #--------------------------------------------------------
         elif self.state == st_1:
-            print(self.test_floder + '/' + self.filename_list[self.image_index]+".png")
+            image_path = self.testing_path + '/' + self.filename_list[self.image_index]+".png"
             if self.filename_list[self.image_index] == '_camera_settings':
                 self.state = st_4
                 return
-            self.image_pub.publish_image(self.test_floder+'/' + self.filename_list[self.image_index]+".png")
+            self.image_pub.publish_image(image_path)
             self.tStart = time.time()#timer start
             self.state = st_2
         #--------------------------------------------------------
         elif self.state == st_2:
+            self.tEnd = time.time() #during time
+            if self.tEnd- self.tStart < 0:
+                return
             self.target = self.get_target()
             if self.target is None:
                 self.tEnd = time.time() #during time
-                if self.tEnd- self.tStart < 0.01:
+                if self.tEnd- self.tStart < 0:
                     return
             self.state = st_3
         #--------------------------------------------------------
         elif self.state == st_3:
-            json_data=self.loadjson(self.test_floder + '/' + self.filename_list[self.image_index]+".json",self.object_number)
+            json_path=self.testing_path + '/' + self.filename_list[self.image_index]+".json"
+            json_data=self.loadjson(json_path,self.object_number)
             if self.target is not None:
                 for model in self.model_list:
                     if self.target.has_key(str(model)+'_location'):
                         error = self.location_match(self.target[str(model)+"_location"],
                                                           json_data["translations"][0])
-                        print(error)
+                        # print("local_error",error)
                         euler_error = self.quaternion_match(self.target[str(model)+"_euler"],
                                                             json_data['euler_pose'])
-                        print(euler_error)
+                        # print("euler_roll  ",self.target[str(model)+"_euler"][0],json_data['euler_pose'][0])
+                        # print("euler_pitch ",self.target[str(model)+"_euler"][1],json_data['euler_pose'][1])
+                        # print("euler_yaw   ",self.target[str(model)+"_euler"][2],json_data['euler_pose'][2])
                         self.accuracy[model]["image"].append(self.filename_list[self.image_index])
                         self.accuracy[model]["location_error"].append(error)
                         self.accuracy[model]["roll_error"].append(euler_error[0])
                         self.accuracy[model]["pitch_error"].append(euler_error[1])
                         self.accuracy[model]["yaw_error"].append(euler_error[2])
+                        
+                        ans = PoseStamped()
+                        ans.header.frame_id = '/dope'
+                        ans.pose.position.x = json_data["translations"][0][0]
+                        ans.pose.position.y = json_data["translations"][0][1]
+                        ans.pose.position.z = json_data["translations"][0][2]
+                        
+                        ans.pose.orientation.x = json_data["quaternion_pose"][0]
+                        ans.pose.orientation.y = json_data["quaternion_pose"][1]
+                        ans.pose.orientation.z = json_data["quaternion_pose"][2]
+                        ans.pose.orientation.w = json_data["quaternion_pose"][3]
+                        self.sub_cb[model].result_pose_pub.publish(ans)
             self.image_index=self.image_index +1
             self.state = st_1
         #--------------------------------------------------------
@@ -163,14 +202,36 @@ class result_manager:
             data_df = pd.DataFrame()
             for model in self.model_list:
                 data_df = pd.DataFrame(self.accuracy[model])
-                data_df.loc['avg'] = data_df.mean()
-                data_df.to_csv(str(g_path2package) + "/accuracy/" + str(self.output_file_name) + '/' + str(model) + ".csv")
+                self.total_average[model] = data_df.mean()
+                print(data_df.shape[0],len(self.filename_list))
+                print(float(data_df.shape[0]/len(self.filename_list)))
+                self.total_average.loc["deteced rate"] = data_df.shape[0]/(len(self.filename_list)-2)
+                print( self.total_average )
+                data_df.loc['avg'] = data_df.mean() 
+                data_df.to_csv(str(self.save_path) + '/' + str(model) + ".csv")
+                print(str(self.save_path) + '/' + str(model) + ".csv")
             self.state = st_5
             
         #--------------------------------------------------------
         elif self.state == st_5:
+            self.total_average.to_csv(str(self.save_path) + "/total_average_"+str(self.object_number) +  "_stage2.csv")
+            print(str(self.save_path) + "/total_average_model_" +str(self.object_number) + "_stage2.csv")
+            
+            self.image_index = 0
+            self.view_num = self.view_num +1
+            if self.view_num == 1:
+                self.state = st_6
+                return    
+
+            self.state = st_init
+        #--------------------------------------------------------
+        #--------------------------------------------------------
+        elif self.state == st_6:
+            self.state = st_7
             return
         #--------------------------------------------------------
+        elif self.state == st_7:
+            return
         return
     #============================Tools============================
     def get_target(self):
@@ -266,17 +327,29 @@ class result_manager:
             translations.append([location[0],location[1],location[2]])
             
             pose_transfer = tf.transformations.quaternion_from_matrix(info['pose_transform'])
-            # pose_transfer = tf.transformations.quaternion_inverse(pose_transfer)
+            pose_transfer = tf.transformations.quaternion_inverse(pose_transfer)
             
             # quaternion
             rot = info["quaternion_xyzw"]
             rotations.append(rot)
         
+        # Rx = tf.transformations.rotation_matrix( 0*math.pi/180, (1, 0, 0))
+        # Ry = tf.transformations.rotation_matrix( 90*math.pi/180, (0, 1, 0))
+        # Rz = tf.transformations.rotation_matrix( 0*math.pi/180, (0, 0, 1))
+        # R = tf.transformations.concatenate_matrices(Rx, Ry, Rz)
+        # offset_R_q = tf.transformations.quaternion_from_matrix(R)
+        # quaternion_pose = tf.transformations.quaternion_multiply(data['camera_data']['quaternion_xyzw_worldframe'],offset_R_q)
         
-        
+        # quaternion_pose = data['camera_data']['quaternion_xyzw_worldframe']
         quaternion_pose = tf.transformations.quaternion_multiply(pose_transfer,data['camera_data']['quaternion_xyzw_worldframe'])
-        euler_pose = tf.transformations.euler_from_quaternion(quaternion_pose ,"rxyz") 
+        # quaternion_pose = tf.transformations.quaternion_multiply(pose_transfer,quaternion_pose)
+        
+        
+        euler_pose = tf.transformations.euler_from_quaternion(quaternion_pose)
         euler_pose = np.multiply(euler_pose,(180/math.pi))
+        
+        # euler_pose = tf.transformations.euler_from_quaternion(quaternion_pose ,"rxyz") 
+        # euler_pose = np.multiply(euler_pose,(-180/math.pi))
         return {
             "pointsBelief":pointsBelief, 
             "rotations":rotations,
@@ -287,6 +360,7 @@ class result_manager:
             "keypoints_3d":points_keypoints_3d,
             "cuboid_centroid":cuboid_centroid,
             "euler_pose":euler_pose,
+            "quaternion_pose":quaternion_pose,
             }
     #============================Tools============================
 def main(args):
@@ -303,7 +377,7 @@ def main(args):
         exit(1)
     # __,test_folder,output_file_name,start_filenum,end_filenum = args
     __,test_folder,object_number,output_file_name = args
-    test_floder = g_path2package + '/dataset/testDATA/{}'.format(args[1])
+    test_floder = g_path2package + '/dataset/{}'.format(args[1])
     
     #load yaml file for read
     config_name = "config_result.yaml"

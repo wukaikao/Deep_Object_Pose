@@ -4,48 +4,325 @@ frame_id: "/dope"
 
 # Comment any of these lines to prevent detection / pose estimation of that object
 weights: {
-    #  "1_A":"train_1_HUGE_vgg-_stage3/net_epoch_5.pth", 
-    #  "1_B":"train_1_HUGE_vgg-_stage3/net_epoch_10.pth", 
-    #  "1_C":"train_1_HUGE_vgg-_stage3/net_epoch_15.pth", 
-    #  "1_D":"train_1_HUGE_vgg-_stage3/net_epoch_20.pth", 
+    #  "1_v2_2":"exp1/train_1_v2_vgg-_stage3/net_epoch_2.pth", 
+    #  "1_v2_3":"exp1/train_1_v2_vgg-_stage3/net_epoch_3.pth", 
+    #  "1_v2_4":"exp1/train_1_v2_vgg-_stage3/net_epoch_4.pth", 
+    #  "1_v2_5":"exp1/train_1_v2_vgg-_stage3/net_epoch_5.pth", 
+    #  "1_v2_6":"exp1/train_1_v2_vgg-_stage3/net_epoch_6.pth", 
+    #  "1_v2_7":"exp1/train_1_v2_vgg-_stage3/net_epoch_7.pth", 
+    #  "1_v2_8":"exp1/train_1_v2_vgg-_stage3/net_epoch_8.pth", 
+    #  "1_v2_9":"exp1/train_1_v2_vgg-_stage3/net_epoch_9.pth",
+    #  "1_v2_10":"exp1/train_1_v2_vgg-_stage3/net_epoch_10.pth",
+    
+    # "1_v2_1":"exp1/train_1_v2_vgg_stage3/net_epoch_1.pth",  
+    # "1_v2_2":"exp1/train_1_v2_vgg_stage3/net_epoch_2.pth", 
+    # "1_v2_3":"exp1/train_1_v2_vgg_stage3/net_epoch_3.pth", 
+    # "1_v2_4":"exp1/train_1_v2_vgg_stage3/net_epoch_4.pth", 
+    # "1_v2_5":"exp1/train_1_v2_vgg_stage3/net_epoch_5.pth", 
+    # "1_v2_6":"exp1/train_1_v2_vgg_stage3/net_epoch_6.pth", 
+    # "1_v2_7":"exp1/train_1_v2_vgg_stage3/net_epoch_7.pth", 
+    # "1_v2_8":"exp1/train_1_v2_vgg_stage3/net_epoch_8.pth", 
+    # "1_v2_9":"exp1/train_1_v2_vgg_stage3/net_epoch_9.pth",
+    # "1_v2_10":"exp1/train_1_v2_vgg_stage3/net_epoch_10.pth",
 
-    #  "2_A":"train_2_HUGE_vgg-_stage3/net_epoch_5.pth", 
-    #  "2_B":"train_2_HUGE_vgg-_stage3/net_epoch_10.pth", 
-    #  "2_C":"train_2_HUGE_vgg-_stage3/net_epoch_15.pth", 
-    #  "2_D":"train_2_HUGE_vgg-_stage3/net_epoch_20.pth", 
+#------------------------------------------------------------------------------
 
-     "3_A":"train_3_HUGE_vgg-_stage3/net_epoch_5.pth", 
-     "3_B":"train_3_HUGE_vgg-_stage3/net_epoch_10.pth", 
-     "3_C":"train_3_HUGE_vgg-_stage3/net_epoch_15.pth", 
-     "3_D":"train_3_HUGE_vgg-_stage3/net_epoch_20.pth", 
+    #  "1_v3_2":"exp1/train_1_v3_vgg-_stage3/net_epoch_2.pth", 
+    #  "1_v3_3":"exp1/train_1_v3_vgg-_stage3/net_epoch_3.pth", 
+    #  "1_v3_4":"exp1/train_1_v3_vgg-_stage3/net_epoch_4.pth", 
+    #  "1_v3_5":"exp1/train_1_v3_vgg-_stage3/net_epoch_5.pth", 
+    #  "1_v3_6":"exp1/train_1_v3_vgg-_stage3/net_epoch_6.pth", 
+    #  "1_v3_7":"exp1/train_1_v3_vgg-_stage3/net_epoch_7.pth", 
+    #  "1_v3_8":"exp1/train_1_v3_vgg-_stage3/net_epoch_8.pth", 
+    #  "1_v3_9":"exp1/train_1_v3_vgg-_stage3/net_epoch_9.pth",
+    #  "1_v3_10":"exp1/train_1_v3_vgg-_stage3/net_epoch_10.pth",
+
+    # "1_v3_1":"exp1/train_1_v3_vgg_stage3/net_epoch_1.pth", 
+    # "1_v3_2":"exp1/train_1_v3_vgg_stage3/net_epoch_2.pth", 
+    # "1_v3_3":"exp1/train_1_v3_vgg_stage3/net_epoch_3.pth", 
+    # "1_v3_4":"exp1/train_1_v3_vgg_stage3/net_epoch_4.pth", 
+    # "1_v3_5":"exp1/train_1_v3_vgg_stage3/net_epoch_5.pth", 
+    # "1_v3_6":"exp1/train_1_v3_vgg_stage3/net_epoch_6.pth", 
+    # "1_v3_7":"exp1/train_1_v3_vgg_stage3/net_epoch_7.pth", 
+    # "1_v3_8":"exp1/train_1_v3_vgg_stage3/net_epoch_8.pth",
+    # "1_v3_9":"exp1/train_1_v3_vgg_stage3/net_epoch_9.pth",
+    # "1_v3_10":"exp1/train_1_v3_vgg_stage3/net_epoch_10.pth",
+#------------------------------------------------------------------------------
+
+
+    #  "1_v2+v3_1":"exp1/train_1_v2+v3_vgg-_stage3/net_epoch_1.pth", 
+    #  "1_v2+v3_2":"exp1/train_1_v2+v3_vgg-_stage3/net_epoch_2.pth", 
+    #  "1_v2+v3_3":"exp1/train_1_v2+v3_vgg-_stage3/net_epoch_3.pth", 
+    #  "1_v2+v3_4":"exp1/train_1_v2+v3_vgg-_stage3/net_epoch_4.pth", 
+    #  "1_v2+v3_5":"exp1/train_1_v2+v3_vgg-_stage3/net_epoch_5.pth", 
+
+
+    # "1_v2v3_1":"exp1/train_1_v2+v3_vgg_stage3/net_epoch_1.pth", 
+    # "1_v2v3_2":"exp1/train_1_v2+v3_vgg_stage3/net_epoch_2.pth", 
+    # "1_v2v3_3":"exp1/train_1_v2+v3_vgg_stage3/net_epoch_3.pth", 
+    # "1_v2v3_4":"exp1/train_1_v2+v3_vgg_stage3/net_epoch_4.pth", 
+    # "1_v2v3_5":"exp1/train_1_v2+v3_vgg_stage3/net_epoch_5.pth", 
+    # "1_v2v3_6":"exp1/train_1_v2+v3_vgg_stage3/net_epoch_6.pth", 
+    # "1_v2v3_7":"exp1/train_1_v2+v3_vgg_stage3/net_epoch_7.pth", 
+    # "1_v2v3_8":"exp1/train_1_v2+v3_vgg_stage3/net_epoch_8.pth",
+    # "1_v2v3_9":"exp1/train_1_v2+v3_vgg_stage3/net_epoch_9.pth",
+    # "1_v2v3_10":"exp1/train_1_v2+v3_vgg_stage3/net_epoch_10.pth",
+
+#------------------------------------------------------------------------------
+    
+
+    #  "1_HUGE_1":"exp2/train_1_HUGE_vgg-_stage3/net_epoch_1.pth", 
+    #  "1_HUGE_2":"exp2/train_1_HUGE_vgg-_stage3/net_epoch_2.pth", 
+    #  "1_HUGE_3":"exp2/train_1_HUGE_vgg-_stage3/net_epoch_3.pth", 
+     "1_HUGE_4":"exp2/train_1_HUGE_vgg-_stage3/net_epoch_4.pth", 
+     "1_HUGE_5":"exp2/train_1_HUGE_vgg-_stage3/net_epoch_5.pth", 
+     "1_HUGE_6":"exp2/train_1_HUGE_vgg-_stage3/net_epoch_6.pth", 
+     "1_HUGE_7":"exp2/train_1_HUGE_vgg-_stage3/net_epoch_7.pth", 
+     "1_HUGE_8":"exp2/train_1_HUGE_vgg-_stage3/net_epoch_8.pth", 
+    #  "1_HUGE_9":"exp2/train_1_HUGE_vgg-_stage3/net_epoch_9.pth", 
+    #  "1_HUGE_10":"exp2/train_1_HUGE_vgg-_stage3/net_epoch_10.pth", 
+    #  "1_HUGE_11":"exp2/train_1_HUGE_vgg-_stage3/net_epoch_11.pth", 
+    #  "1_HUGE_12":"exp2/train_1_HUGE_vgg-_stage3/net_epoch_12.pth", 
+    #  "1_HUGE_13":"exp2/train_1_HUGE_vgg-_stage3/net_epoch_13.pth", 
+    #  "1_HUGE_14":"exp2/train_1_HUGE_vgg-_stage3/net_epoch_14.pth", 
+    #  "1_HUGE_15":"exp2/train_1_HUGE_vgg-_stage3/net_epoch_15.pth", 
+
+    #  "2_HUGE_1":"exp2/train_2_HUGE_vgg-_stage3/net_epoch_1.pth", 
+    #  "2_HUGE_2":"exp2/train_2_HUGE_vgg-_stage3/net_epoch_2.pth", 
+    #  "2_HUGE_3":"exp2/train_2_HUGE_vgg-_stage3/net_epoch_3.pth", 
+    #  "2_HUGE_4":"exp2/train_2_HUGE_vgg-_stage3/net_epoch_4.pth", 
+    #  "2_HUGE_5":"exp2/train_2_HUGE_vgg-_stage3/net_epoch_5.pth", 
+    #  "2_HUGE_6":"exp2/train_2_HUGE_vgg-_stage3/net_epoch_6.pth", 
+    #  "2_HUGE_7":"exp2/train_2_HUGE_vgg-_stage3/net_epoch_7.pth", 
+    #  "2_HUGE_8":"exp2/train_2_HUGE_vgg-_stage3/net_epoch_8.pth", 
+    #  "2_HUGE_9":"exp2/train_2_HUGE_vgg-_stage3/net_epoch_9.pth", 
+    #  "2_HUGE_10":"exp2/train_2_HUGE_vgg-_stage3/net_epoch_10.pth", 
+    #  "2_HUGE_11":"exp2/train_2_HUGE_vgg-_stage3/net_epoch_11.pth", 
+    #  "2_HUGE_12":"exp2/train_2_HUGE_vgg-_stage3/net_epoch_12.pth", 
+    #  "2_HUGE_13":"exp2/train_2_HUGE_vgg-_stage3/net_epoch_13.pth", 
+    #  "2_HUGE_14":"exp2/train_2_HUGE_vgg-_stage3/net_epoch_14.pth", 
+    #  "2_HUGE_15":"exp2/train_2_HUGE_vgg-_stage3/net_epoch_15.pth", 
+
+    #  "3_HUGE_1":"exp2/train_3_HUGE_vgg-_stage3/net_epoch_1.pth", 
+    #  "3_HUGE_2":"exp2/train_3_HUGE_vgg-_stage3/net_epoch_2.pth", 
+    #  "3_HUGE_3":"exp2/train_3_HUGE_vgg-_stage3/net_epoch_3.pth", 
+    #  "3_HUGE_4":"exp2/train_3_HUGE_vgg-_stage3/net_epoch_4.pth", 
+    #  "3_HUGE_5":"exp2/train_3_HUGE_vgg-_stage3/net_epoch_5.pth", 
+    #  "3_HUGE_6":"exp2/train_3_HUGE_vgg-_stage3/net_epoch_6.pth", 
+    #  "3_HUGE_7":"exp2/train_3_HUGE_vgg-_stage3/net_epoch_7.pth", 
+    #  "3_HUGE_8":"exp2/train_3_HUGE_vgg-_stage3/net_epoch_8.pth", 
+    #  "3_HUGE_9":"exp2/train_3_HUGE_vgg-_stage3/net_epoch_9.pth", 
+    #  "3_HUGE_10":"exp2/train_3_HUGE_vgg-_stage3/net_epoch_10.pth", 
+    #  "3_HUGE_11":"exp2/train_3_HUGE_vgg-_stage3/net_epoch_11.pth", 
+    #  "3_HUGE_12":"exp2/train_3_HUGE_vgg-_stage3/net_epoch_12.pth", 
+    #  "3_HUGE_13":"exp2/train_3_HUGE_vgg-_stage3/net_epoch_13.pth", 
+    #  "3_HUGE_14":"exp2/train_3_HUGE_vgg-_stage3/net_epoch_14.pth", 
+    #  "3_HUGE_15":"exp2/train_3_HUGE_vgg-_stage3/net_epoch_15.pth", 
+
+
+
+    #  "2_A":"exp1/train_1_v3_vgg-_stage3/net_epoch_1.pth", 
+    #  "2_B":"exp1/train_1_v3_vgg-_stage3/net_epoch_2.pth", 
+    #  "2_C":"exp1/train_1_v3_vgg-_stage3/net_epoch_3.pth", 
+    #  "2_D":"exp1/train_1_v3_vgg-_stage3/net_epoch_4.pth", 
+
+    #  "3_A":"exp1/train_1_v2+v3_vgg-_stage3/net_epoch_1.pth", 
+    #  "3_B":"exp1/train_1_v2+v3_vgg-_stage3/net_epoch_2.pth", 
+    #  "3_C":"exp1/train_1_v2+v3_vgg-_stage3/net_epoch_3.pth", 
+    #  "3_D":"exp1/train_1_v2+v3_vgg-_stage3/net_epoch_4.pth", 
+    #  "3_E":"exp1/train_1_v2+v3_vgg-_stage3/net_epoch_5.pth", 
 }
 
 # Cuboid dimension in cm x,y,z
 dimensions: {
-    "1_A" : [4.4,4.3,4.2], #1
-    "1_B" : [4.4,4.3,4.2], #1
-    "1_C" : [4.4,4.3,4.2], #1
-    "1_D" : [4.4,4.3,4.2], #1
+    "1_v2_1" : [4.4,4.3,4.2], #1
+    "1_v2_2" : [4.4,4.3,4.2], #1
+    "1_v2_3" : [4.4,4.3,4.2], #1
+    "1_v2_4" : [4.4,4.3,4.2], #1
+    "1_v2_5" : [4.4,4.3,4.2], #1
+    "1_v2_6" : [4.4,4.3,4.2], #1
+    "1_v2_7" : [4.4,4.3,4.2], #1
+    "1_v2_8" : [4.4,4.3,4.2], #1
+    "1_v2_9" : [4.4,4.3,4.2], #1
+    "1_v2_10" : [4.4,4.3,4.2], #1
 
-    "2_A" : [5.68,3.9,4.6], #2
-    "2_B" : [3.9,5.68,4.6], #2
-    "2_C" : [5.68,3.9,4.6], #2
-    "2_D" : [3.9,5.68,4.6], #2
+    "1_v3_1" : [4.4,4.3,4.2], #1
+    "1_v3_2" : [4.4,4.3,4.2], #1
+    "1_v3_3" : [4.4,4.3,4.2], #1
+    "1_v3_4" : [4.4,4.3,4.2], #1
+    "1_v3_5" : [4.4,4.3,4.2], #1
+    "1_v3_6" : [4.4,4.3,4.2], #1
+    "1_v3_7" : [4.4,4.3,4.2], #1
+    "1_v3_8" : [4.4,4.3,4.2], #1
+    "1_v3_9" : [4.4,4.3,4.2], #1
+    "1_v3_10" : [4.4,4.3,4.2], #1
+
+
+    "1_v2v3_1" : [4.4,4.3,4.2], #1
+    "1_v2v3_2" : [4.4,4.3,4.2], #1
+    "1_v2v3_3" : [4.4,4.3,4.2], #1
+    "1_v2v3_4" : [4.4,4.3,4.2], #1
+    "1_v2v3_5" : [4.4,4.3,4.2], #1
+    "1_v2v3_6" : [4.4,4.3,4.2], #1
+    "1_v2v3_7" : [4.4,4.3,4.2], #1
+    "1_v2v3_8" : [4.4,4.3,4.2], #1
+    "1_v2v3_9" : [4.4,4.3,4.2], #1
+    "1_v2v3_10" : [4.4,4.3,4.2], #1
+
+
+    "1_HUGE_1":[4.4,4.3,4.2],
+    "1_HUGE_2":[4.4,4.3,4.2],
+    "1_HUGE_3":[4.4,4.3,4.2],
+    "1_HUGE_4":[4.4,4.3,4.2],
+    "1_HUGE_5":[4.4,4.3,4.2],
+    "1_HUGE_6":[4.4,4.3,4.2],
+    "1_HUGE_7":[4.4,4.3,4.2],
+    "1_HUGE_8":[4.4,4.3,4.2],
+    "1_HUGE_9":[4.4,4.3,4.2],
+    "1_HUGE_10":[4.4,4.3,4.2],
+    "1_HUGE_11":[4.4,4.3,4.2],
+    "1_HUGE_12":[4.4,4.3,4.2],
+    "1_HUGE_13":[4.4,4.3,4.2],
+    "1_HUGE_14":[4.4,4.3,4.2],
+    "1_HUGE_15":[4.4,4.3,4.2],
+
+    "2_HUGE_1":[5.68,3.9,4.6],
+    "2_HUGE_2":[3.9,5.68,4.6],
+    "2_HUGE_3":[5.68,3.9,4.6],
+    "2_HUGE_4":[3.9,5.68,4.6],
+    "2_HUGE_5":[5.68,3.9,4.6],
+    "2_HUGE_6":[5.68,3.9,4.6],
+    "2_HUGE_7":[3.9,5.68,4.6],
+    "2_HUGE_8":[5.68,3.9,4.6],
+    "2_HUGE_9":[3.9,5.68,4.6],
+    "2_HUGE_10":[5.68,3.9,4.6],
+    "2_HUGE_11":[5.68,3.9,4.6],
+    "2_HUGE_12":[3.9,5.68,4.6],
+    "2_HUGE_13":[5.68,3.9,4.6],
+    "2_HUGE_14":[3.9,5.68,4.6],
+    "2_HUGE_15":[5.68,3.9,4.6],
+
+    "3_HUGE_1":[6.2,7,4.59],
+    "3_HUGE_2":[6.2,7,4.59],
+    "3_HUGE_3":[6.2,7,4.59],
+    "3_HUGE_4":[6.2,7,4.59],
+    "3_HUGE_5":[6.2,7,4.59],
+    "3_HUGE_6":[6.2,7,4.59],
+    "3_HUGE_7":[6.2,7,4.59],
+    "3_HUGE_8":[6.2,7,4.59],
+    "3_HUGE_9":[6.2,7,4.59],
+    "3_HUGE_10":[6.2,7,4.59],
+    "3_HUGE_11":[6.2,7,4.59],
+    "3_HUGE_12":[6.2,7,4.59],
+    "3_HUGE_13":[6.2,7,4.59],
+    "3_HUGE_14":[6.2,7,4.59],
+    "3_HUGE_15":[6.2,7,4.59],
+
+
+    # "2_A" : [5.68,3.9,4.6], #2
+    # "2_B" : [3.9,5.68,4.6], #2
+    # "2_C" : [5.68,3.9,4.6], #2
+    # "2_D" : [3.9,5.68,4.6], #2
 
 
 
-    "3_A" : [6.2,7,4.59],  #3
-    "3_B" : [6.2,7,4.59],  #3
-    "3_C" : [6.2,7,4.59],  #3
-    "3_D" : [6.2,7,4.59],  #3
+    # "3_A" : [6.2,7,4.59],  #3
+    # "3_B" : [6.2,7,4.59],  #3
+    # "3_C" : [6.2,7,4.59],  #3
+    # "3_D" : [6.2,7,4.59],  #3
+    # "3_E" : [6.2,7,4.59],  #3
 
 }
 
 draw_colors: {
-    "1_A" : [13, 255, 128],  # green
-    "1_B" : [255, 255, 255],  # while
-    "1_C" : [0, 104, 255],  # blue
-    "1_D" : [217,12, 232],  # magenta
+    # "1_A" : [13, 255, 128],  # green
+    # "1_B" : [255, 255, 255],  # while
+    # "1_C" : [0, 104, 255],  # blue
+    # "1_D" : [217,12, 232],  # magenta
+    
+    "1_v2_1" :[13, 255, 128],
+    "1_v2_2" :[13, 255, 128],
+    "1_v2_3" :[255, 255, 255],
+    "1_v2_4" :[0, 104, 255],
+    "1_v2_5" :[217,12, 232],  
+    "1_v2_6" :[13, 255, 128],
+    "1_v2_7" :[255, 255, 255],
+    "1_v2_8" :[0, 104, 255],
+    "1_v2_9" :[217,12, 232],  
+    "1_v2_10" :[217,12, 232], 
+    
+    "1_v3_1" :[13, 255, 128],
+    "1_v3_2" :[13, 255, 128],
+    "1_v3_3" :[255, 255, 255],
+    "1_v3_4" :[0, 104, 255],
+    "1_v3_5" :[217,12, 232],  
+    "1_v3_6" :[13, 255, 128],
+    "1_v3_7" :[255, 255, 255],
+    "1_v3_8" :[0, 104, 255],
+    "1_v3_9" :[217,12, 232],  
+    "1_v3_10" :[217,12, 232], 
+    
+    "1_v2v3_1" :[13, 255, 128],
+    "1_v2v3_2" :[13, 255, 128],
+    "1_v2v3_3" :[255, 255, 255],
+    "1_v2v3_4" :[0, 104, 255],
+    "1_v2v3_5" :[217,12, 232],  
+    "1_v2v3_6" :[13, 255, 128],
+    "1_v2v3_7" :[255, 255, 255],
+    "1_v2v3_8" :[0, 104, 255],
+    "1_v2v3_9" :[217,12, 232],  
+    "1_v2v3_10" :[217,12, 232], 
+    
+    "1_HUGE_1":[13, 255, 128],  # green
+    "1_HUGE_2":[255, 255, 255],  # while
+    "1_HUGE_3":[0, 104, 255],  # blue
+    "1_HUGE_4":[217,12, 232],  # magenta
+    "1_HUGE_5":[13, 255, 128],  # green
+    "1_HUGE_6":[13, 255, 128],  # green
+    "1_HUGE_7":[255, 255, 255],  # while
+    "1_HUGE_8":[0, 104, 255],  # blue
+    "1_HUGE_9":[217,12, 232],  # magenta
+    "1_HUGE_10":[13, 255, 128],  # green
+    "1_HUGE_11":[13, 255, 128],  # green
+    "1_HUGE_12":[255, 255, 255],  # while
+    "1_HUGE_13":[0, 104, 255],  # blue
+    "1_HUGE_14":[217,12, 232],  # magenta
+    "1_HUGE_15":[13, 255, 128],  # green
+    
+    "2_HUGE_1":[13, 255, 128],
+    "2_HUGE_2":[255, 255, 255],
+    "2_HUGE_3":[0, 104, 255],
+    "2_HUGE_4":[217,12, 232],  #
+    "2_HUGE_5":[13, 255, 128],
+    "2_HUGE_6":[13, 255, 128],
+    "2_HUGE_7":[255, 255, 255],
+    "2_HUGE_8":[0, 104, 255],
+    "2_HUGE_9":[217,12, 232],  #
+    "2_HUGE_10":[13, 255, 128],
+    "2_HUGE_11":[13, 255, 128],
+    "2_HUGE_12":[255, 255, 255],
+    "2_HUGE_13":[0, 104, 255],
+    "2_HUGE_14":[217,12, 232],  #
+    "2_HUGE_15":[13, 255, 128],
+    
+    "3_HUGE_1":[13, 255, 128],
+    "3_HUGE_2":[255, 255, 255],
+    "3_HUGE_3":[0, 104, 255],
+    "3_HUGE_4":[217,12, 232],  #
+    "3_HUGE_5":[13, 255, 128],
+    "3_HUGE_6":[13, 255, 128],
+    "3_HUGE_7":[255, 255, 255],
+    "3_HUGE_8":[0, 104, 255],
+    "3_HUGE_9":[217,12, 232],  #
+    "3_HUGE_10":[13, 255, 128],
+    "3_HUGE_11":[13, 255, 128],
+    "3_HUGE_12":[255, 255, 255],
+    "3_HUGE_13":[0, 104, 255],
+    "3_HUGE_14":[217,12, 232],  #
+    "3_HUGE_15":[13, 255, 128],
+
+
+
 
     "2_A" : [13, 255, 128],  # green
     "2_B" : [255, 255, 255],  # while
@@ -56,6 +333,7 @@ draw_colors: {
     "3_B" : [255, 255, 255],  # while
     "3_C" : [0, 104, 255],  # blue
     "3_D" : [217,12, 232],  # magenta
+    "3_E" : [0,12, 232],  # magenta
 }
 
 # Camera intrinsics (Logitech C920)
@@ -73,4 +351,4 @@ camera_settings: {
 thresh_angle: 0.5
 thresh_map: 0.01
 sigma: 3
-thresh_points: 0.1
+thresh_points: 1
