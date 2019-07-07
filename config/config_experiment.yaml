@@ -6,10 +6,10 @@ frame_id: "/dope"
 weights: {
     "1_A":"train_1_HUGE_vgg-_stage3/net_epoch_5.pth", 
     "1_B":"train_1_HUGE_vgg-_stage3/net_epoch_52.pth", 
-    # "2_A":"train_2_HUGE_vgg-_stage3_2+/net_epoch_5.pth", 
-    # "2_B":"train_2_HUGE_vgg-_stage3_2+/net_epoch_31.pth", 
-    # "3_A":"train_3_HUGE_vgg-_stage3/net_epoch_5.pth", 
-    # "3_B":"train_3_HUGE_vgg-_stage3/net_epoch_16.pth",
+    "2_A":"train_2_HUGE_vgg-_stage3_2+/net_epoch_5.pth", 
+    "2_B":"train_2_HUGE_vgg-_stage3_2+/net_epoch_31.pth", 
+    "3_A":"train_3_HUGE_vgg-_stage3/net_epoch_5.pth", 
+    "3_B":"train_3_HUGE_vgg-_stage3/net_epoch_16.pth",
 }
 
 # Cuboid dimension in cm x,y,z

@@ -165,13 +165,13 @@ def run_dope_node(params, freq=5):
             rospy.Publisher(
                 '{}/pose_{}'.format(params['topic_publishing'], model), 
                 PoseStamped, 
-                queue_size=10
+                queue_size=1#10
             )
         pub_dimension[model] = \
             rospy.Publisher(
                 '{}/dimension_{}'.format(params['topic_publishing'], model),
                 String, 
-                queue_size=10
+                queue_size=1#10
             )
         pub_all_peaks[model] = \
             rospy.Publisher(
@@ -185,7 +185,7 @@ def run_dope_node(params, freq=5):
         rospy.Publisher(
             params['topic_publishing']+"/rgb_points", 
             ImageSensor_msg, 
-            queue_size=10
+            queue_size=1#10
         )
     
     # Starts ROS listener

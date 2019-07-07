@@ -5,7 +5,7 @@
 
 CONTAINER_NAME=$1
 if [[ -z "${CONTAINER_NAME}" ]]; then
-    CONTAINER_NAME=nvidia-dope-v1
+    CONTAINER_NAME=nvidia-dope-v2
 fi
 
 # This specifies a mapping between a host directory and a directory in the
