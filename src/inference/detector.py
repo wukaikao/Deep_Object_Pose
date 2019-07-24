@@ -113,18 +113,7 @@ class DopeNetwork(nn.Module):
             stop_at_stage=1  # number of stages to process (if less than total number of stages)
         ):
         super(DopeNetwork, self).__init__()
-        print(stop_at_stage)
-        print('\n')
-        print('\n')
-        print('\n')
-        print('\n')
-        print('\n')
-        print('\n')
-        print('\n')
-        print('\n')
-        print('\n')
-        print('\n')
-        print('\n')
+
         self.stop_at_stage = stop_at_stage
 
         vgg_full = models.vgg19(pretrained=False).features

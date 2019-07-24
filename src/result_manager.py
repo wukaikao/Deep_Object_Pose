@@ -160,7 +160,7 @@ class result_manager:
             self.target = self.get_target()
             if self.target is None:
                 self.tEnd = time.time() #during time
-                if self.tEnd- self.tStart < 0:
+                if self.tEnd- self.tStart < 0 :
                     return
             self.state = st_3
         #--------------------------------------------------------
@@ -214,8 +214,8 @@ class result_manager:
             
         #--------------------------------------------------------
         elif self.state == st_5:
-            self.total_average.to_csv(str(self.save_path) + "/total_average_"+str(self.object_number) +  "_stage2.csv")
-            print(str(self.save_path) + "/total_average_model_" +str(self.object_number) + "_stage2.csv")
+            self.total_average.to_csv(str(self.save_path) + "/total_average_"+str(self.object_number) +  "_nd_stage2.csv")
+            print(str(self.save_path) + "/total_average_model_" +str(self.object_number) + "_nd_stage2.csv")
             
             self.image_index = 0
             self.view_num = self.view_num +1
@@ -327,23 +327,28 @@ class result_manager:
             translations.append([location[0],location[1],location[2]])
             
             pose_transfer = tf.transformations.quaternion_from_matrix(info['pose_transform'])
-            pose_transfer = tf.transformations.quaternion_inverse(pose_transfer)
+            # pose_transfer = tf.transformations.quaternion_inverse(pose_transfer)
             
             # quaternion
             rot = info["quaternion_xyzw"]
             rotations.append(rot)
         
-        # Rx = tf.transformations.rotation_matrix( 0*math.pi/180, (1, 0, 0))
-        # Ry = tf.transformations.rotation_matrix( 90*math.pi/180, (0, 1, 0))
-        # Rz = tf.transformations.rotation_matrix( 0*math.pi/180, (0, 0, 1))
-        # R = tf.transformations.concatenate_matrices(Rx, Ry, Rz)
+        Rx = tf.transformations.rotation_matrix( 0*math.pi/180, (1, 0, 0))
+        Ry = tf.transformations.rotation_matrix(-90*math.pi/180, (0, 1, 0))
+        Rz = tf.transformations.rotation_matrix( 90*math.pi/180, (0, 0, 1))
+        R = tf.transformations.concatenate_matrices(Rx, Ry, Rz)
+        
+        rot = np.dot(rot,Ry)
+        rot = np.dot(rot,Rz)
+
         # offset_R_q = tf.transformations.quaternion_from_matrix(R)
-        # quaternion_pose = tf.transformations.quaternion_multiply(data['camera_data']['quaternion_xyzw_worldframe'],offset_R_q)
+        # rot = tf.transformations.quaternion_multiply(rot,offset_R_q)
         
         # quaternion_pose = data['camera_data']['quaternion_xyzw_worldframe']
-        quaternion_pose = tf.transformations.quaternion_multiply(pose_transfer,data['camera_data']['quaternion_xyzw_worldframe'])
-        # quaternion_pose = tf.transformations.quaternion_multiply(pose_transfer,quaternion_pose)
-        
+        invers_data_camera_q = tf.transformations.quaternion_inverse(data['camera_data']['quaternion_xyzw_worldframe'])
+        quaternion_pose = tf.transformations.quaternion_multiply(rot,invers_data_camera_q)
+        # quaternion_pose = tf.transformations.quaternion_multiply(rot,pose_transfer)
+            
         
         euler_pose = tf.transformations.euler_from_quaternion(quaternion_pose)
         euler_pose = np.multiply(euler_pose,(180/math.pi))
