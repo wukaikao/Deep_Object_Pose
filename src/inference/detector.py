@@ -110,7 +110,7 @@ class DopeNetwork(nn.Module):
             self,
             numBeliefMap=9,
             numAffinity=16,
-            stop_at_stage=3  # number of stages to process (if less than total number of stages)
+            stop_at_stage=1  # number of stages to process (if less than total number of stages)
         ):
         super(DopeNetwork, self).__init__()
 
