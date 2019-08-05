@@ -22,6 +22,7 @@ import rospkg
 rospack = rospkg.RosPack()
 g_path2package = rospack.get_path('dope')
 
+from detector_vgg_minuse import * 
 
 #=================state define==================
 st_init =0
@@ -99,6 +100,11 @@ class result_manager:
 
         self.accuracy = {}
         self.init_sub()
+        self.draw_colors = {}
+        self.pnp_solvers[model] = {}
+        self.config_detect = lambda: None
+        self.init_variable(self.params)
+        
         self.state = st_init
         self.tStart = 0
         self.tEnd = 0
@@ -128,6 +134,39 @@ class result_manager:
                 self.sub_cb[model].sub_cp
             )
     #======================initial subscriber======================
+    #======================initial variable======================
+    def init_variable(self,params):
+        matrix_camera = np.zeros((3,3))
+        matrix_camera[0,0] = params["camera_settings"]['fx']
+        matrix_camera[1,1] = params["camera_settings"]['fy']
+        matrix_camera[0,2] = params["camera_settings"]['cx']
+        matrix_camera[1,2] = params["camera_settings"]['cy']
+        matrix_camera[2,2] = 1
+        if "dist_coeffs" in params["camera_settings"]:
+            dist_coeffs = np.array(params["camera_settings"]['dist_coeffs'])
+
+        self.config.mask_edges = 1
+        self.config.mask_faces = 1
+        self.config.vertex = 1
+        self.config.threshold = 0.5
+        self.config.softmax = 1000
+        self.config.thresh_angle = params['thresh_angle']
+        self.config.thresh_map = params['thresh_map']
+        self.config.sigma = params['sigma']
+        self.config.thresh_points = params["thresh_points"]
+        
+        for model in params['weights']:
+            self.draw_colors[model] = \
+                tuple(params["draw_colors"][model])
+            self.pnp_solvers[model] = \
+                CuboidPNPSolver(
+                    model,
+                    matrix_camera,
+                    Cuboid3d(params['dimensions'][model]),
+                    dist_coeffs=dist_coeffs
+                )
+    #======================initial variable======================
+
 
     def process(self):
         if self.state == st_init:
@@ -170,6 +209,9 @@ class result_manager:
             if self.target is not None:
                 for model in self.model_list:
                     if self.target.has_key(str(model)+'_location'):
+                        detected_objects, all_peaks = ObjectDetector.find_object_poses(vertex2, None, self.pnp_solver, self.config)
+
+
                         error = self.location_match(self.target[str(model)+"_location"],
                                                           json_data["translations"][0])
                         # print("local_error",error)
@@ -367,13 +409,15 @@ class result_manager:
             "euler_pose":euler_pose,
             "quaternion_pose":quaternion_pose,
             }
+
+        
     #============================Tools============================
 def main(args):
     if(len(args)!=4):
         print("-----------------------------------------------------------------------\n" +
               "Wrong args input. The args must be 2 !\n" +  
               "example:\n" +
-              "rosrun dope load_image_topic.py testDATA/view1/model_1 1 train_1_v3_vgg-_stage3_60 0 409\n" +
+              "rosrun dope result_manager.py testDATA/view1/model_1 1 tmp/\n" +
               "arg[1] for #test_folder\n" +
               "arg[2] for #object_number\n" +
               "arg[3] for #output_file_name\n" +
