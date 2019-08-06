@@ -524,11 +524,27 @@ class ObjectDetector(object):
         detected_objects = []
         obj_name = pnp_solver.object_name
 
+        # print(len(objects))
         for obj in objects:
+            # print(obj)
+            # print(len(obj))
+            print("obj[0]:")
+            print(obj[0])
+            print("obj[1]:")
+            print(obj[1])
+            print("obj[2]:")
+            print(obj[2])
+            # print(obj[0][0])
+            # print(obj[0][1])
+
             # Run PNP
             points = obj[1] + [(obj[0][0]*4, obj[0][1]*4)]
+            print("points:")
+            print(points)
             cuboid2d = np.copy(points)
             location, quaternion, projected_points = pnp_solver.solve_pnp(points)
+            print("projected_points:")
+            print( projected_points)
 
             # Save results
             detected_objects.append({

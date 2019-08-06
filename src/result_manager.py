@@ -21,7 +21,8 @@ import math
 import rospkg
 rospack = rospkg.RosPack()
 g_path2package = rospack.get_path('dope')
-
+sys.path.append("{}/src/inference".format(g_path2package))
+from cuboid import *
 from detector_vgg_minuse import * 
 
 #=================state define==================
@@ -101,8 +102,8 @@ class result_manager:
         self.accuracy = {}
         self.init_sub()
         self.draw_colors = {}
-        self.pnp_solvers[model] = {}
-        self.config_detect = lambda: None
+        self.pnp_solvers = {}
+        self.config = lambda: None
         self.init_variable(self.params)
         
         self.state = st_init
@@ -142,6 +143,8 @@ class result_manager:
         matrix_camera[0,2] = params["camera_settings"]['cx']
         matrix_camera[1,2] = params["camera_settings"]['cy']
         matrix_camera[2,2] = 1
+
+        dist_coeffs = np.zeros((4,1))
         if "dist_coeffs" in params["camera_settings"]:
             dist_coeffs = np.array(params["camera_settings"]['dist_coeffs'])
 
@@ -209,9 +212,9 @@ class result_manager:
             if self.target is not None:
                 for model in self.model_list:
                     if self.target.has_key(str(model)+'_location'):
-                        detected_objects, all_peaks = ObjectDetector.find_object_poses(vertex2, None, self.pnp_solver, self.config)
-
-
+                        # detected_objects, all_peaks = ObjectDetector.find_object_poses(vertex2, None, self.pnp_solver, self.config)
+                        detected_objects = self.answer_pnp(json_data,self.pnp_solvers[model])
+                        print(detected_objects)
                         error = self.location_match(self.target[str(model)+"_location"],
                                                           json_data["translations"][0])
                         # print("local_error",error)
@@ -296,6 +299,30 @@ class result_manager:
             return None
         return target
 
+    # How to use #
+    # self.answer_pnp(belief_point,pnp_solvers[model])
+    def answer_pnp(self,jason_data,pnp_solver):
+        objects = []
+        objects.append((jason_data["centroids"][0][0],jason_data["centroids"][0][1]))
+        objects = jason_data["pointsBelief"][0] + objects
+
+        detected_objects = []
+        obj_name = pnp_solver.object_name
+        # Run PNP
+        points = objects
+        cuboid2d = np.copy(points)
+        location, quaternion, projected_points = pnp_solver.solve_pnp(points)
+        # Save results
+        detected_objects.append({
+            'name': obj_name,
+            'location': location,
+            'quaternion': quaternion,
+            'cuboid2d': cuboid2d,
+            'projected_points': projected_points,
+        })
+
+        return detected_objects
+    
     def location_match(self,pd_point,ans_point):
         # print(str(pd_point)+"\n",ans_point)
         return math.sqrt(  (pow(abs(pd_point.x-ans_point[0]),2)) + (pow(abs(pd_point.y-ans_point[1]),2)) + (pow(abs(pd_point.z-ans_point[2]),2))  )
