@@ -177,7 +177,6 @@ class result_manager:
             model_path = self.test_floder + '/' + self.view_folder[self.view_num]
             model_folder = sorted(os.listdir(model_path))
             self.testing_path = model_path + '/' +model_folder[int(self.object_number)-1]
-            print(self.testing_path)
             json_list = [filename for filename in os.listdir(self.testing_path) if filename.endswith('.json')]
             self.filename_list = sorted([os.path.splitext(filename)[0] for filename in json_list])
 
@@ -214,12 +213,24 @@ class result_manager:
                     if self.target.has_key(str(model)+'_location'):
                         # detected_objects, all_peaks = ObjectDetector.find_object_poses(vertex2, None, self.pnp_solver, self.config)
                         detected_objects = self.answer_pnp(json_data,self.pnp_solvers[model])
-                        print(detected_objects)
+                        detected_euler_pose = tf.transformations.euler_from_quaternion(detected_objects[0]["quaternion"])
+                        detected_euler_pose = np.multiply(detected_euler_pose,(180/math.pi))
+                        
+                        # print(detected_euler_pose)
+
                         error = self.location_match(self.target[str(model)+"_location"],
-                                                          json_data["translations"][0])
+                                                          detected_objects[0]["location"])
+                        # print("local_error:",error)
+                        euler_error = self.euler_match(self.target[str(model)+"_euler"],
+                                                            detected_euler_pose)
+
+                        # print("euler_error:",euler_error)
+                        # error = self.location_match(self.target[str(model)+"_location"],
+                        #                                   json_data["translations"][0])
                         # print("local_error",error)
-                        euler_error = self.quaternion_match(self.target[str(model)+"_euler"],
-                                                            json_data['euler_pose'])
+                        # euler_error = self.euler_match(self.target[str(model)+"_euler"],
+                        #                                     json_data['euler_pose'])
+                        
                         # print("euler_roll  ",self.target[str(model)+"_euler"][0],json_data['euler_pose'][0])
                         # print("euler_pitch ",self.target[str(model)+"_euler"][1],json_data['euler_pose'][1])
                         # print("euler_yaw   ",self.target[str(model)+"_euler"][2],json_data['euler_pose'][2])
@@ -231,14 +242,14 @@ class result_manager:
                         
                         ans = PoseStamped()
                         ans.header.frame_id = '/dope'
-                        ans.pose.position.x = json_data["translations"][0][0]
-                        ans.pose.position.y = json_data["translations"][0][1]
-                        ans.pose.position.z = json_data["translations"][0][2]
+                        ans.pose.position.x = detected_objects[0]["location"][0] #json_data["translations"][0][0]
+                        ans.pose.position.y = detected_objects[0]["location"][1] #json_data["translations"][0][1]
+                        ans.pose.position.z = detected_objects[0]["location"][2] #json_data["translations"][0][2]
                         
-                        ans.pose.orientation.x = json_data["quaternion_pose"][0]
-                        ans.pose.orientation.y = json_data["quaternion_pose"][1]
-                        ans.pose.orientation.z = json_data["quaternion_pose"][2]
-                        ans.pose.orientation.w = json_data["quaternion_pose"][3]
+                        ans.pose.orientation.x = detected_objects[0]["quaternion"][0] #json_data["quaternion_pose"][0]
+                        ans.pose.orientation.y = detected_objects[0]["quaternion"][1] #json_data["quaternion_pose"][1]
+                        ans.pose.orientation.z = detected_objects[0]["quaternion"][2] #json_data["quaternion_pose"][2]
+                        ans.pose.orientation.w = detected_objects[0]["quaternion"][3] #json_data["quaternion_pose"][3]
                         self.sub_cb[model].result_pose_pub.publish(ans)
             self.image_index=self.image_index +1
             self.state = st_1
@@ -308,6 +319,7 @@ class result_manager:
 
         detected_objects = []
         obj_name = pnp_solver.object_name
+        
         # Run PNP
         points = objects
         cuboid2d = np.copy(points)
@@ -327,9 +339,9 @@ class result_manager:
         # print(str(pd_point)+"\n",ans_point)
         return math.sqrt(  (pow(abs(pd_point.x-ans_point[0]),2)) + (pow(abs(pd_point.y-ans_point[1]),2)) + (pow(abs(pd_point.z-ans_point[2]),2))  )
     
-    def quaternion_match(self,pd_euler,ans_euler):
-        # print(pd_euler)
-        # print(ans_euler)
+    def euler_match(self,pd_euler,ans_euler):
+        # print("pd_euler",pd_euler)
+        print("ans_euler",ans_euler)
         return abs(pd_euler[0] - ans_euler[0]), abs(pd_euler[1] - ans_euler[1]), abs(pd_euler[2] - ans_euler[2])
 
     def loadjson(self,path, objectsofinterest):
@@ -444,7 +456,7 @@ def main(args):
         print("-----------------------------------------------------------------------\n" +
               "Wrong args input. The args must be 2 !\n" +  
               "example:\n" +
-              "rosrun dope result_manager.py testDATA/view1/model_1 1 tmp/\n" +
+              "rosrun dope result_manager.py testDATA 1 tmp/\n" +
               "arg[1] for #test_folder\n" +
               "arg[2] for #object_number\n" +
               "arg[3] for #output_file_name\n" +
