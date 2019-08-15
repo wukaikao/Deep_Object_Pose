@@ -114,8 +114,8 @@ class result_manager:
         self.view_num = 0
         self.total_average = pd.DataFrame()
 
+        self.listener = tf.TransformListener()
 
-        
     #======================initial subscriber======================
     def init_sub(self):
         for model in self.model_list:
@@ -215,7 +215,6 @@ class result_manager:
                         detected_objects = self.answer_pnp(json_data,self.pnp_solvers[model])
                         detected_euler_pose = tf.transformations.euler_from_quaternion(detected_objects[0]["quaternion"])
                         detected_euler_pose = np.multiply(detected_euler_pose,(180/math.pi))
-                        
                         # print(detected_euler_pose)
 
                         error = self.location_match(self.target[str(model)+"_location"],
@@ -223,7 +222,22 @@ class result_manager:
                         # print("local_error:",error)
                         euler_error = self.euler_match(self.target[str(model)+"_euler"],
                                                             detected_euler_pose)
-
+                        # Detected
+                        self.TF_set_coordinate((self.target[str(model)+"_location"].x,self.target[str(model)+"_location"].y,self.target[str(model)+"_location"].z),
+                                               (self.target[str(model)+"_pose"].x/100,self.target[str(model)+"_pose"].y/100,self.target[str(model)+"_pose"].z/100,self.target[str(model)+"_pose"].w/100),
+                                               str(model),
+                                               "world")
+                        # ANS
+                        self.TF_set_coordinate((detected_objects[0]["location"][0],detected_objects[0]["location"][1],detected_objects[0]["location"][2]),
+                                               (detected_objects[0]["quaternion"][0],detected_objects[0]["quaternion"][1],detected_objects[0]["quaternion"][2],detected_objects[0]["quaternion"][3]),
+                                               str(model)+"_ans",
+                                               "world")
+                        # ANS_FIXed
+                        self.TF_rotate_coordinate('z',-90,
+                                                  str(model)+"_ans_fixed",
+                                                  str(model)+"_ans")
+                        
+                        # self.TF_get_transform("/"+str(model)+"_ans_fixed","/world")
                         # print("euler_error:",euler_error)
                         # error = self.location_match(self.target[str(model)+"_location"],
                         #                                   json_data["translations"][0])
@@ -241,7 +255,7 @@ class result_manager:
                         self.accuracy[model]["yaw_error"].append(euler_error[2])
                         
                         ans = PoseStamped()
-                        ans.header.frame_id = '/dope'
+                        ans.header.frame_id = '/world'
                         ans.pose.position.x = detected_objects[0]["location"][0] #json_data["translations"][0][0]
                         ans.pose.position.y = detected_objects[0]["location"][1] #json_data["translations"][0][1]
                         ans.pose.position.z = detected_objects[0]["location"][2] #json_data["translations"][0][2]
@@ -341,7 +355,7 @@ class result_manager:
     
     def euler_match(self,pd_euler,ans_euler):
         # print("pd_euler",pd_euler)
-        print("ans_euler",ans_euler)
+        # print("ans_euler",ans_euler)
         return abs(pd_euler[0] - ans_euler[0]), abs(pd_euler[1] - ans_euler[1]), abs(pd_euler[2] - ans_euler[2])
 
     def loadjson(self,path, objectsofinterest):
@@ -449,7 +463,52 @@ class result_manager:
             "quaternion_pose":quaternion_pose,
             }
 
-        
+    def TF_set_coordinate(self,location,quaternion,child_coordinate,father_coordinate):
+        # print("frame_name")
+        # print(child_coordinate,father_coordinate)
+        br = tf.TransformBroadcaster()
+        br.sendTransform(location,
+                         quaternion,
+                         rospy.Time.now(),
+                         child_coordinate,
+                         father_coordinate)
+
+    def TF_rotate_coordinate(self,axes,angle,child_coordinate,father_coordinate):
+        if axes == 'x':
+            Rx = tf.transformations.rotation_matrix( angle*math.pi/180, (1, 0, 0))
+        else:
+            Rx = tf.transformations.rotation_matrix( 0*math.pi/180, (1, 0, 0))
+        if axes == 'y':
+            Ry = tf.transformations.rotation_matrix(angle*math.pi/180, (0, 1, 0))
+        else:
+            Ry = tf.transformations.rotation_matrix(0*math.pi/180, (0, 1, 0))
+        if axes == 'z':
+            Rz = tf.transformations.rotation_matrix( angle*math.pi/180, (0, 0, 1))
+        else:
+            Rz = tf.transformations.rotation_matrix( 0*math.pi/180, (0, 0, 1))
+        R = tf.transformations.concatenate_matrices(Rx, Ry, Rz)
+
+        quaternion = tf.transformations.quaternion_from_matrix(R)
+
+        br = tf.TransformBroadcaster()
+        br.sendTransform((0,0,0),
+                         quaternion,
+                         rospy.Time.now(),
+                         child_coordinate,
+                         father_coordinate)
+    def TF_get_transform(self,child_coordinate,father_coordinate):
+        child_coordinate = "/1_e14_ans"
+        father_coordinate = "/world"
+        now = rospy.Time(0)
+        self.listener.waitForTransform(child_coordinate,father_coordinate, rospy.Time(), rospy.Duration(10.0))
+        try:
+            now = rospy.Time.now()
+            self.listener.waitForTransform(child_coordinate,father_coordinate, now, rospy.Duration(4.0))
+            (trans,rot) = self.listener.lookupTransform(child_coordinate,father_coordinate, now)
+            print("(trans,rot)"+str(trans) + "  " + str(rot))
+        except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException):
+            return None
+        return trans,rot
     #============================Tools============================
 def main(args):
     if(len(args)!=4):
