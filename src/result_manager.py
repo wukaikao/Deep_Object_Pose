@@ -36,6 +36,8 @@ st_6 = 6
 st_7 = 7
 st_8 = 8
 
+st_3_2 = 1003
+
 target_object = {}
 #===============================================
 
@@ -213,60 +215,54 @@ class result_manager:
                     if self.target.has_key(str(model)+'_location'):
                         # detected_objects, all_peaks = ObjectDetector.find_object_poses(vertex2, None, self.pnp_solver, self.config)
                         detected_objects = self.answer_pnp(json_data,self.pnp_solvers[model])
-                        detected_euler_pose = tf.transformations.euler_from_quaternion(detected_objects[0]["quaternion"])
-                        detected_euler_pose = np.multiply(detected_euler_pose,(180/math.pi))
-                        # print(detected_euler_pose)
-
-                        error = self.location_match(self.target[str(model)+"_location"],
-                                                          detected_objects[0]["location"])
-                        # print("local_error:",error)
-                        euler_error = self.euler_match(self.target[str(model)+"_euler"],
-                                                            detected_euler_pose)
-                        # Detected
+                        
+                        # @~set Detected coordinate
                         self.TF_set_coordinate((self.target[str(model)+"_location"].x,self.target[str(model)+"_location"].y,self.target[str(model)+"_location"].z),
                                                (self.target[str(model)+"_pose"].x/100,self.target[str(model)+"_pose"].y/100,self.target[str(model)+"_pose"].z/100,self.target[str(model)+"_pose"].w/100),
                                                str(model),
                                                "world")
-                        # ANS
+                        # @~set ANS coordinate
                         self.TF_set_coordinate((detected_objects[0]["location"][0],detected_objects[0]["location"][1],detected_objects[0]["location"][2]),
                                                (detected_objects[0]["quaternion"][0],detected_objects[0]["quaternion"][1],detected_objects[0]["quaternion"][2],detected_objects[0]["quaternion"][3]),
                                                str(model)+"_ans",
                                                "world")
-                        # ANS_FIXed
+                        # @~set ANS_FIXed coordinate
                         self.TF_rotate_coordinate('z',-90,
                                                   str(model)+"_ans_fixed",
                                                   str(model)+"_ans")
-                        
-                        # self.TF_get_transform("/"+str(model)+"_ans_fixed","/world")
-                        # print("euler_error:",euler_error)
-                        # error = self.location_match(self.target[str(model)+"_location"],
-                        #                                   json_data["translations"][0])
-                        # print("local_error",error)
-                        # euler_error = self.euler_match(self.target[str(model)+"_euler"],
-                        #                                     json_data['euler_pose'])
-                        
-                        # print("euler_roll  ",self.target[str(model)+"_euler"][0],json_data['euler_pose'][0])
-                        # print("euler_pitch ",self.target[str(model)+"_euler"][1],json_data['euler_pose'][1])
-                        # print("euler_yaw   ",self.target[str(model)+"_euler"][2],json_data['euler_pose'][2])
-                        self.accuracy[model]["image"].append(self.filename_list[self.image_index])
-                        self.accuracy[model]["location_error"].append(error)
-                        self.accuracy[model]["roll_error"].append(euler_error[0])
-                        self.accuracy[model]["pitch_error"].append(euler_error[1])
-                        self.accuracy[model]["yaw_error"].append(euler_error[2])
-                        
-                        ans = PoseStamped()
-                        ans.header.frame_id = '/world'
-                        ans.pose.position.x = detected_objects[0]["location"][0] #json_data["translations"][0][0]
-                        ans.pose.position.y = detected_objects[0]["location"][1] #json_data["translations"][0][1]
-                        ans.pose.position.z = detected_objects[0]["location"][2] #json_data["translations"][0][2]
-                        
-                        ans.pose.orientation.x = detected_objects[0]["quaternion"][0] #json_data["quaternion_pose"][0]
-                        ans.pose.orientation.y = detected_objects[0]["quaternion"][1] #json_data["quaternion_pose"][1]
-                        ans.pose.orientation.z = detected_objects[0]["quaternion"][2] #json_data["quaternion_pose"][2]
-                        ans.pose.orientation.w = detected_objects[0]["quaternion"][3] #json_data["quaternion_pose"][3]
-                        self.sub_cb[model].result_pose_pub.publish(ans)
-            self.image_index=self.image_index +1
-            self.state = st_1
+            self.state = st_3_2
+        #--------------------------------------------------------
+        elif self.state == st_3_2:
+            if self.target is not None:
+                try:
+                    for model in self.model_list:
+                        if self.target.has_key(str(model)+'_location'):
+                            # @~get dtected and answer cooridinate
+                            ans_loc,ans_quaternion = self.TF_get_transform('/'+str(model)+"_ans_fixed","/world")
+                            detected_loc,detected_quaternion = self.TF_get_transform('/'+str(model),"/world")
+                            if ans_loc is not None and ans_quaternion is not None and detected_loc is not None and detected_quaternion is not None:
+                                # @~transform quaternion to euler
+                                ans_euler = tf.transformations.euler_from_quaternion(ans_quaternion)
+                                detected_euler = tf.transformations.euler_from_quaternion(detected_quaternion)
+                                ans_euler = np.multiply(ans_euler,(180/math.pi))
+                                detected_euler = np.multiply(detected_euler,(180/math.pi))
+
+                                # @~calculate error
+                                loc_error = self.location_match(ans_loc,detected_loc)
+                                euler_error = self.euler_match(ans_euler,detected_euler)
+
+                                self.accuracy[model]["image"].append(self.filename_list[self.image_index])
+                                self.accuracy[model]["location_error"].append(loc_error)
+                                self.accuracy[model]["roll_error"].append(euler_error[0])
+                                self.accuracy[model]["pitch_error"].append(euler_error[1])
+                                self.accuracy[model]["yaw_error"].append(euler_error[2])
+                    self.image_index=self.image_index +1
+                    self.state = st_1
+                except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException):
+                    pass
+            else:
+                self.image_index=self.image_index +1
+                self.state = st_1
         #--------------------------------------------------------
         elif self.state == st_4:
             data_df = pd.DataFrame()
@@ -350,8 +346,8 @@ class result_manager:
         return detected_objects
     
     def location_match(self,pd_point,ans_point):
-        # print(str(pd_point)+"\n",ans_point)
-        return math.sqrt(  (pow(abs(pd_point.x-ans_point[0]),2)) + (pow(abs(pd_point.y-ans_point[1]),2)) + (pow(abs(pd_point.z-ans_point[2]),2))  )
+        print(str(pd_point)+"\n",ans_point)
+        return math.sqrt(  (pow(abs(pd_point[0]-ans_point[0]),2)) + (pow(abs(pd_point[1]-ans_point[1]),2)) + (pow(abs(pd_point[2]-ans_point[2]),2))  )
     
     def euler_match(self,pd_euler,ans_euler):
         # print("pd_euler",pd_euler)
@@ -497,17 +493,12 @@ class result_manager:
                          child_coordinate,
                          father_coordinate)
     def TF_get_transform(self,child_coordinate,father_coordinate):
-        child_coordinate = "/1_e14_ans"
-        father_coordinate = "/world"
+        # print(child_coordinate,father_coordinate)
         now = rospy.Time(0)
-        self.listener.waitForTransform(child_coordinate,father_coordinate, rospy.Time(), rospy.Duration(10.0))
         try:
-            now = rospy.Time.now()
-            self.listener.waitForTransform(child_coordinate,father_coordinate, now, rospy.Duration(4.0))
             (trans,rot) = self.listener.lookupTransform(child_coordinate,father_coordinate, now)
-            print("(trans,rot)"+str(trans) + "  " + str(rot))
         except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException):
-            return None
+            return None,None
         return trans,rot
     #============================Tools============================
 def main(args):
